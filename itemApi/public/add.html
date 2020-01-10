@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+    }
+    .section{
+      width:1100px;
+      margin:0 auto;
+      height:auto;
+      overflow: hidden;
+      padding:40px 0 40px 50px;
+      background:pink;
+    }
+  
+    .section>p{
+      margin-bottom:30px
+    }
+    .section>p>label{
+      font-size:18px;
+      margin-right:20px;
+    }
+    .section>p>input{
+      width:300px;
+      height:32px;
+      padding-top:2px;
+      box-sizing: border-box;
+    }
+    .section>p:nth-child(5)>input{
+      height:100px
+    }
+    .section>p:nth-child(2){
+      position: relative;
+      display: flex;
+    }
+    .section>p:nth-child(2)>span{
+      display: flex;
+      flex-direction: column;
+    }
+    .section>p:nth-child(2)>span>.image{
+      width:180px;
+    }
+    .section>p:nth-child(2)>span>button{
+      width:60px;
+      height:20px;
+      margin-top:10px
+    }
+    .section>p:nth-child(2)>#pic{
+      width:120px;
+      height:100px;
+      display: none;
+    }
+    .section>button{
+      width:150px;
+      height:40px;
+      margin-right:20px;
+      background: cornflowerblue;
+      margin-top:10px;
+      font-size: 18px;
+      border:0
+    }
+    .section>button:nth-of-type(2){
+      background:darkgrey;
+    }
+  </style>
+</head>
+<body>
+  <div class="section"> 
+    <p><label>名称</label><input type="text" class="name"></p> 
+    <p><label>图片</label>
+      <span>
+      <input type="file" class="image">
+      <button onclick='upload()'>上传</button>
+    </span>
+    <img  id="pic">
+  </p>
+    <p><label>价格</label><input type="text" class="price"></p>
+    <p><label>菜系</label><input type="text" class="sort"></p>
+    <p><label>评价</label><input type="text" class="comment"></p>
+    <button onclick='addfood()'>保存提交</button>
+    <button onclick='exit()'>取消</button>
+</div>
+  <script src="jquery.min.js"></script>
+  <script src="./layer-v3.1.1/layer/layer.js"></script>
+  <script>
+    let img=null
+    $('.image').click(function(){
+      $('p>span').css('marginTop','50px')
+    })
+  function upload(){
+     let formdata = new FormData()
+     formdata.append('images',$('.image')[0].files[0])
+      $.ajax({
+       url:'http://localhost:3000/file/img',
+       type:'post',
+       contentType:false,
+       data:formdata,
+       processData:false,
+       success(res){
+         console.log(res)
+         if(res.err===0){
+           img=res.path
+           $('#pic').attr({'src':res.path}).show() 
+           
+         }
+       }
+     })
+ }
+  function addfood(){
+    if(!img){
+      alert('请先上传图片')
+      return false
+    }
+    $.ajax({
+       url:'http://localhost:3000/food/add',
+       type:'post',
+        data:{
+        name:$('.name').val(), 
+        image:img,
+        price:$('.price').val(),
+        sort:$('.sort').val(),
+        comment:$('.comment').val(),
+        token:localStorage.getItem('token')
+       },
+       success(res){
+         if(res.err===0){
+           window.parent.location.reload()
+           var index=parent.layer.getFrameIndex(window.name)
+           parent.layer.close(index) 
+         }
+      }
+    })
+  }
+  function exit(){
+    window.location.reload()
+  }
+    
+   
+  </script>
+</body>
+</html>

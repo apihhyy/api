@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+    }
+    img{
+      width:120px;
+      height:100px;
+      vertical-align: middle;
+    }
+    ul,ol,li{
+      list-style: none;
+    }
+    .main{
+      width:1200px;
+      height:auto;
+      overflow: hidden;
+      margin:0 auto;
+      background: pink;
+    }
+    .main>.head{
+      width:100%;
+      height:100px; 
+      text-align: center;
+      line-height: 100px;
+      background: darkgray;
+    }
+    .main>.head>h1{
+      font-size:30px;
+    }
+    .main>.banner>.anniu{
+      height:70px;
+      line-height: 70px;
+      padding:0 50px;
+    }
+    .main>.banner>.anniu>button{
+      width:120px;
+      height:35px;
+      margin-top:18px;
+      text-align: center;
+      line-height: 35px;
+      background: coral;
+      float:left;
+      font-size: 18px;
+    }
+    .main>.banner>.anniu>button:nth-of-type(2){
+      margin-left:20px;
+    }
+    .main>.banner>.anniu>span{
+      float:right
+    }
+    .main>.banner>.search{
+      float: right;
+      margin-bottom:30px;
+      margin-right:40px;
+      background:brown;
+      position: relative;
+    }
+    .main>.banner>.search>input{
+      width:180px;
+      height:28px;
+      box-sizing: border-box;
+      padding:2px 0 2px 5px; 
+    }
+    .main>.banner>.search>i{
+      width: 25px;
+      height:20px;
+      display: block;
+      position: absolute;
+      right:10px;
+      top:4px;
+      background:brown
+    }
+    .main>.body{
+      padding:0px 20px;
+      box-sizing: border-box;
+    }
+    .main>.body>.list{
+      height:auto;
+      overflow: hidden;
+    }
+    .main>.body>ol,.main>.body>.list>ul{
+      width:100%;
+      display: flex;
+      align-items: center;
+      border-top:1px solid #999;
+      border-left: 1px solid #999;
+      box-sizing: border-box;
+      height:50px  
+    }
+    .main>.body>ol>li, .main>.body>.list>ul>li{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-flow: wrap;
+      height:100%;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      box-sizing: border-box;
+    }
+    .main>.body>.list>ul{
+        height:120px;
+        border-top:0
+    }
+    li:nth-child(1),li:nth-child(6){
+      width:250px
+    }
+    li:nth-child(2),li:nth-child(4),li:nth-child(5){
+      width:100px
+    }
+    li:nth-child(3),li:nth-child(7){
+      width:180px
+    }
+    .main>.body>.list>ul>li:nth-child(7)>button{
+      width:40px;
+      height:20px;
+    }
+    .main>.body>.list>ul>li:nth-child(7)>button:nth-child(1){
+       margin-right:10px
+    }
+    .main>.pageList{
+      margin-top:20px
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div class="head">
+      <h1>某某餐馆后台管理</h1>
+    </div>
+    <div class="banner">
+      <div class="anniu">
+        <button onclick="insert()">添加菜品</button>
+        <button onclick="updata()">批量删除</button>
+        <span>共有数据：<b class="allcount">54</b>条</span>
+      </div>
+      <div class="search">
+         <input type="text" name="search" placeholder="查询商品">
+         <i></i>
+      </div>
+    </div>
+    <div class="body">
+      <ol>
+        <li>id</li>
+        <li>名称</li>
+        <li>图片</li>
+        <li>价格</li>
+        <li>菜系</li>
+        <li>评价</li>
+        <li>操作</li>
+      </ol>
+      <div class="list"></div>
+    </div>
+     <div class="pageList">
+       <span onclick='jump("first")'>首页</span>
+       <span onclick='jump("prev")'>上一页</span>
+       <span><b class="nowpage">1</b><b>/</b><b class="allpage">54</b></span>
+       <input type="text" class="pages">
+       <span onclick='jump("go")'>跳转</span>
+       <span onclick='jump("next")'>下一页</span>
+       <span onclick='jump("last")'>尾页</span> 
+     </div>
+  </div>
+  <script src="jquery.min.js"></script>
+  <script src="layer-v3.1.1/layer/layer.js"></script>
+  <script>
+    let page=1
+    let pagesize=3
+    let allcount=0
+    let allpage=0
+    function insert() {
+      var index=layer.open({
+        title:'菜品添加',
+        type:2,
+        area:['1000px','600px'],
+        content:'./add.html'
+      })
+      layer.full(index)
+     } 
+    function jump(jumptype){ 
+       switch(jumptype){
+        case 'first':
+          page=1
+          break;
+        case 'last':
+          page=allpage
+          break;
+        case 'go':
+          page=$('.pages').val()
+          if(page<1||page>allpage){
+            return false
+          }
+          break;
+        case 'prev':
+          if(page>1){
+            page-- 
+          }
+          break;
+        case 'next':
+        if(page<allpage){
+            page++ 
+          }
+          break;
+        default:
+          break;
+      }
+        getFood()
+    }  
+    function getFood(){
+          $.ajax({
+          url:'http://localhost:3000/food/findAll',
+          type:'post',
+          data:{
+            page:page,
+            pagesize:pagesize,
+            token:localStorage.getItem('token')
+          },
+          success(res){
+           if(res.err===0){ 
+             render(res.list)
+             allcount=res.tolcount
+             $('.allcount').text(allcount)
+             allpage=Math.ceil(allcount/pagesize)
+             $('.allpage').text(allpage)
+             $('.nowpage').text(page)
+           }
+          }
+        })
+      }
+    getFood() 
+    function render(data){
+        let ul=''
+        data.map((item,index)=>{
+          ul += ` 
+          <ul>
+            <li>${item._id}</li>
+            <li>${item.name}</li>
+            <li><img src="${item.image}"></li>
+            <li>${item.price}</li>
+            <li>${item.sort}</li>
+            <li>${item.comment}</li>
+            <li>
+              <button onclick="upd('${item._id}')">编辑</button>
+              <button onclick="del('${item._id}')">删除</button>
+            </li>
+          </ul>`
+        })
+          $('.list').html('')
+          $('.list').append(ul)
+
+      }
+    function del(id){
+      layer.confirm('确定要删除吗？',function(index){
+       let url='http://localhost:3000/food/del'
+       let data={id:id,token:localStorage.getItem('token')}
+       $.post(url,data,(res)=>{
+          if(res.err==0){
+           layer.msg('已删除!',{icon:1,time:1000}) 
+          }
+       })
+
+      })
+    
+    }
+    function upd(id){
+      localStorage.getItem('id',id)
+      var index=layer.open({
+        title:'菜品更新',
+        type:2,
+        area:['1000px','800px'],
+        content:'./upd.html'
+      })
+      layer.full(index)
+    }
+    
+    
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1488249_mpc1g6loui7.css">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+
+    }
+    img{
+      width:100%;
+      height:100%;
+      display: block;
+    }
+    a{
+      text-decoration: none;
+    }
+    .banner{
+     width:100%;
+     height:500px;
+     background:pink;
+     position: relative;
+    }
+    .banner>.login{
+      width:340px;
+      padding:20px;
+      overflow: hidden;
+      box-sizing: border-box;
+      border:1px solid #999;
+      position: absolute;
+      top:100px;
+      left:50%
+    }
+    
+    .banner>.login>.head{
+      display: flex;
+      justify-content: space-between;
+
+      align-items: center;
+      padding:0 10px
+    }
+
+    .banner>.login>.head>h2{
+      font-size: 18px;
+    }
+    .banner>.login>.head>a{
+ 
+      font-size: 14px;
+    }
+    .banner>.login>form>.err{
+      font-size:14px;
+      text-indent: 32px;
+      height:30px;
+      line-height:30px;
+    
+      box-sizing: border-box;
+    }
+    .banner>.login>form>.user{
+      margin-bottom:25px; 
+    }
+    .banner>.login>form>.user,.banner>.login>form>.pwd{
+     
+      position: relative;
+    }
+    .banner>.login>form>div>label{
+      width:40px;
+      height:40px;
+      position: absolute;
+      left:1px;
+      top:1px;
+      background-color: #ddd;
+      outline:0;
+      text-align: center;
+    
+    }
+    .banner>.login>form>div>label>i{
+      width:22px;
+      height:22px;
+      margin-top:9px;
+      text-align: center;
+      line-height: 22px;
+      display: inline-block;
+      font-size:22px;
+      color: #606060;
+    }
+    .banner>.login>form>div>input{
+      width:300px;
+      height:42px;
+      padding: 11px 8px 11px 50px;
+      font-size:14px;
+      box-sizing: border-box;
+    }
+    .banner>.login>form>button{
+      width:300px;
+      height:40px;
+      line-height: 40px;
+      border: 0;
+      text-align: center;
+      font-size:16px;
+      font-weight: 700;
+      color: white;
+      background-color:#ff0036;
+    }
+    .banner>.login>form>.save{
+      display: flex;
+      align-items: center;
+      padding:10px 0
+    }
+    .banner>.login>form>.save>input{
+      width:15px;
+      height:15px;
+
+    }
+    .banner>.login>form>.save>span{
+      margin-left:10px;
+      font-size: 14px;
+    }
+    .banner>.login>form>.save>a{
+      font-size: 14px;
+      margin-left:150px;
+     
+    }
+    .banner>.login>form>.save>a:hover{
+      color: #ff0036;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <div class="login">
+      <div class="head"><h2>用户登录</h2><a href="./reg.html">免费注册</a></div>
+      <form>
+        <div class="err"></div>
+        <div class="user">
+        <label><i title="用户名" class="iconfont icon--umpuser2"></i></label>
+        <input type="text" name="username" placeholder="请输入用户名">
+        </div>
+        <div class="pwd">
+        <label><i title="用check户密码" class="iconfont icon-denglumima"></i></label>
+        <input type="password" name="password" placeholder="请输入密码">
+        </div>
+        <p class="save"><input type="checkbox" ><span>保存密码</span><a href="#">忘记密码</a></p>
+        <button>登 录</button>
+    
+      </form>
+     </div>
+ </div>
+</body>
+<script src="jquery.min.js"></script>
+<script>
+  $('form').on('submit',function(e){
+    e.preventDefault()
+
+     $.ajax({
+         url:'http://localhost:3000/user/login',
+         type:'POST',
+         data:{
+             username:$('.user>input').val(),
+             password:$('.pwd>input').val(),
+         },
+         dataType:'json',
+         success (res) {
+           console.log(res)
+            if(res.err===-1){
+                $('.err').text('用户名或密码错误')
+            }else if(res.err===-2){
+                $('.err').text('该用户不存在,请先去').append($('<a></a>'))
+                .find('a').html('注册').attr({'href':'./reg.html'},{'color':'red'})
+            }else{
+                window.localStorage.setItem('token',res.token)
+                window.location.href='./shouye.html'
+            }
+         }
+     })
+  })
+
+</script>
+</html>

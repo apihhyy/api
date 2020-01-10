@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1488249_mpc1g6loui7.css">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+
+    }
+    a{
+      text-decoration: none;
+    }
+    .banner{
+      width:100%;
+      height:600px;
+      background:pink;
+      position: relative;
+    }
+    .banner>.register{
+      width:300px;
+      overflow: hidden;
+      border:1px solid #999;
+      padding:20px;
+      padding-top:10px;
+      position: absolute;
+      left:50%;
+      top:100px;
+    }
+    .banner>.register{
+      background:white
+    }
+    .banner>.register>h1{
+      width:100%;
+      text-align: center;
+      margin-top:20px;
+      font-size:20px;
+      margin-bottom:10px;
+    }
+    .banner>.register>form>.err{
+      font-size:14px;
+      text-indent: 32px;
+      height:30px;
+      line-height:30px;
+      box-sizing: border-box;
+    }
+    .banner>.register>form>div{
+      position: relative;
+      margin-bottom:20px;
+    }
+
+
+    .banner>.register>form>div>label{
+      width:40px;
+      height:40px;
+      position: absolute;
+      left:1px;
+      top:1px;
+      background-color: #ddd;
+      outline:0;
+      text-align: center;
+    }
+    .banner>.register>form>div>label>i{
+      width:22px;
+      height:22px;
+      margin-top:9px;
+      text-align: center;
+      line-height: 22px;
+      display: inline-block;
+      font-size:22px;
+      color: #606060;
+    }
+    .banner>.register>form>div>input{
+      width:100%;
+      height:42px;
+      padding: 11px 8px 11px 50px;
+      font-size:14px;
+      border: 1px solid #999;
+      box-sizing: border-box;
+    }
+    .banner>.register>form>.check{
+      display: flex;
+      justify-content: space-between;
+    }
+    .banner>.register>form>.check>input{
+      width:50%;
+      height:42px;
+      padding:0;
+      text-indent: 20px;
+      font-size:16px;
+      box-sizing: border-box;
+      
+    }
+    .banner>.register>form>.check>.getCode{
+      line-height: 42px;
+      width:40%;
+      display: block;
+      background:coral;
+      height:42px;
+      text-align: center;
+      color:crimson;
+      font-size:14px;
+    }
+    .banner>.register>form>button{
+      width:100%;
+      height:40px;
+      line-height: 40px;
+      border: 0;
+      text-align: center;
+      font-size:16px;
+      font-weight: 700;
+      color: white;
+      background-color:#ff0036;
+    }
+    .banner>.tip{
+     position: fixed;
+     left:50%;
+     transform: translateX(-50%);
+     top:50%;  
+     font-size:18px;
+    width:300px;
+     height:200px;
+     text-align:center;
+     line-height:200px;
+     border:1px solid #666;
+     display: none;
+}
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <div class="register">
+      <h1>用户注册</h1>
+      <form>
+        <p class="err"></p>
+            <div class="user">    
+              <label><i class="iconfont icon--umpuser2"></i></label>
+              <input  name="email" type="email" placeholder="请输入邮箱">
+            </div>
+            <div class="pwd">
+              <label><i class="iconfont icon-denglumima"></i></label>
+              <input  name="password" type="text" placeholder="密码由6-20位字母，数字和符号组合">
+            </div>
+            <div class="rePwd">
+              <label><i class="iconfont icon-denglumima"></i></label>
+              <input name="rePassword" type="text" placeholder="请再次输入上面的密码">
+            </div>
+            <div class="check">
+              <input type="text" name="code" placeholder="验证码">
+              <a href="javascript:;" class="getCode">获取验证码</a>
+            </div>
+            <button>注册</button>
+      </form>
+    </div>
+    <div class="tip"></div>
+  </div>
+
+  <script src="jquery.min.js"></script>
+  <script>
+    $('.getCode').click(function(){
+        console.log('1')
+        $.ajax({
+          url: '/user/email',
+          type: 'post',
+          data:{
+            email:$('input[name=email]').val()
+          },
+          dataType: 'json',
+          success: function (res) {
+            if(res.err===-1){
+              console.log('验证码发送失败')
+              $('.err').html('注册失败')
+            }
+          }
+        })
+    })
+    $('form').on('submit',function(e){ 
+      e.preventDefault()
+      var params = {
+        username:$('input[name=email]').val(), 
+        password:$('input[name=password]').val(),
+        code:$('input[name=code]').val()
+      }
+      $.ajax({
+        url: '/user/reg',
+        type: 'post',
+        data: params,
+        dataType: 'json',
+        success: function (res) {
+          console.log(res)
+          if(res.err===0){
+              console.log('注册成功') 
+              $('.tip').html("用户创建成功").css('display','block').append($('<a></a>')).find('a').html('点此登陆').attr('href','./login.html')
+              $('.banner').css('opacity','0.5')
+            }else if(res.err===-2){
+              console.log('已注册，请直接登陆')
+              $('.err').html('已注册，请直接').append($('<a></a>'))
+             .find('a').html('登录').attr({'href':'./login.html'})
+            }
+        },
+      
+      })
+    })
+  
+  </script>
+  
+</body>
+</html>
