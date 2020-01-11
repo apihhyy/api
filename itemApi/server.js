@@ -1,4 +1,4 @@
-const express = require('express')
+﻿const express = require('express')
 const path=require('path')
 const app = express()
 const db = require('./db/connect')
@@ -7,6 +7,7 @@ const adminRouter = require('./router/adminRouter')
 const orderRouter = require('./router/orderRouter')
 const shopRouter = require('./router/shopRouter')
 const loginModel = require('./db/model/loginModel')
+const roleRouter = require('./router/roleRouter')
 const jwt = require('jsonwebtoken')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -55,6 +56,21 @@ app.use('/shop',(req,res,next)=>{
    }) 
 },
 shopRouter)
+app.use('/role',(req,res,next)=>{
+   let token = req.body.token
+   if(!token){
+      res.send({err:-999,msg:'token缺失'})
+      return false
+   }
+   jwt.verify(token,'lihuan19980515',(err,data)=>{
+      if(err){
+         res.send({err:-998,msg:'token非法'})
+      }else{
+         next()
+      }
+   }) 
+},
+roleRouter)
 
 app.listen(3003,function(){
    console.log('服务启动成功')
