@@ -5,6 +5,7 @@ const db = require('./db/connect')
 const bodyParser = require('body-parser')
 const adminRouter = require('./router/adminRouter')
 const orderRouter = require('./router/orderRouter')
+const shopRouter = require('./router/shopRouter')
 const loginModel = require('./db/model/loginModel')
 const jwt = require('jsonwebtoken')
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -39,6 +40,21 @@ app.use('/order',(req,res,next)=>{
    }) 
 },
 orderRouter)
+app.use('/shop',(req,res,next)=>{
+   let token = req.body.token
+   if(!token){
+      res.send({err:-999,msg:'token缺失'})
+      return false
+   }
+   jwt.verify(token,'lihuan19980515',(err,data)=>{
+      if(err){
+         res.send({err:-998,msg:'token非法'})
+      }else{
+         next()
+      }
+   }) 
+},
+shopRouter)
 
 app.listen(3003,function(){
    console.log('服务启动成功')
